@@ -346,7 +346,7 @@ int RadiusPacket::unShapeRadiusPacket(void)
 	//	RADIUS packet attributes decoding
 	pos=20;
 			
-    while(pos<len)
+    while(pos+2<len)
 	{
 		//for every turn create a new attribute
 		if(!(ra=new RadiusAttribute))

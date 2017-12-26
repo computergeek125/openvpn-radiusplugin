@@ -377,7 +377,7 @@ int RadiusPacket::unShapeRadiusPacket(void)
 			}
 			ra->setRecvValue(value);		
 			this->addRadiusAttribute(ra);
-			this->length+=ra->getLength();
+            //this->length+=ra->getLength();
 			delete [] value;
 				
 		}

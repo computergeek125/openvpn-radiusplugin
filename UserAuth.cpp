@@ -161,28 +161,28 @@ int UserAuth::sendAcceptRequestPacket(PluginContext * context)
 	int rc=packet.radiusReceive(serverlist);
 	if (rc==0)
 	{
-		//is it a accept?
-		if(packet.getCode()==ACCESS_ACCEPT)
+        //is it a accept?
+        if(packet.getCode()==ACCESS_ACCEPT)
 		{
 			if (DEBUG (context->getVerbosity()))
-				cerr << getTime() << "RADIUS-PLUGIN: Get ACCESS_ACCEPT-Packet.\n";
+                cerr << getTime() << "RADIUS-PLUGIN: Get ACCESS_ACCEPT-Packet.\n";
 
 			//parse the attributes for framedip, framedroutes and
 			//acctinteriminterval
 			this->parseResponsePacket(&packet, context);
-			return 0;
+            return 0;
 			
 		}
-		else if(packet.getCode()==ACCESS_REJECT)
-		{
-		      if (DEBUG (context->getVerbosity()))
-				cerr << getTime() << "RADIUS-PLUGIN: Get ACCESS_REJECT-Packet.\n";
+        else if(packet.getCode()==ACCESS_REJECT)
+        {
+              if (DEBUG (context->getVerbosity()))
+                cerr << getTime() << "RADIUS-PLUGIN: Get ACCESS_REJECT-Packet.\n";
 
-			//parse the attributes for replay message
-			this->parseResponsePacket(&packet, context);
-			return 1;
-		}
-		else
+            //parse the attributes for replay message
+            this->parseResponsePacket(&packet, context);
+            return 1;
+        }
+        else
 		{
 			cerr << getTime() << "RADIUS-PLUGIN: Get ACCESS_REJECT or ACCESS_CHALLENGE-Packet.->ACCESS-DENIED.\n";
 			return 1;
@@ -217,7 +217,7 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
 	
 	
 	
-	range=packet->findAttributes(22);
+    range=packet->findAttributes(ATTRIB_Framed_Route);
 	iter1=range.first;
 	iter2=range.second;	
 	string froutes;
@@ -236,7 +236,7 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
     	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: routes: " << this->getFramedRoutes() <<".\n";
 	
 	
-	range=packet->findAttributes(8);
+    range=packet->findAttributes(ATTRIB_Framed_IP_Address);
 	iter1=range.first;
 	iter2=range.second;	
 	
@@ -251,7 +251,7 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
 	
 	
 	
-	range=packet->findAttributes(99);
+    range=packet->findAttributes(ATTRIB_Framed_IPv6_Route);
 	iter1=range.first;
 	iter2=range.second;	
 	string froutes6;
@@ -269,7 +269,7 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
     	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: framed ipv6 route: " << this->getFramedRoutes6() <<".\n";
 	
 	
-	range=packet->findAttributes(168);
+    range=packet->findAttributes(ATTRIB_Framed_IPv6_Address);
 	iter1=range.first;
 	iter2=range.second;	
 	
@@ -283,7 +283,7 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
     	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: framed IPv6: " << this->getFramedIp6() <<".\n";
 	
 	
-	range=packet->findAttributes(85);
+    range=packet->findAttributes(ATTRIB_Acct_Interim_Interval);
 	iter1=range.first;
 	iter2=range.second;		
 	if (iter1!=iter2)
@@ -298,7 +298,7 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
 	if (DEBUG (context->getVerbosity()))
     	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: Acct Interim Interval: " << this->getAcctInterimInterval() << ".\n";
 	
-	range=packet->findAttributes(26);
+    range=packet->findAttributes(ATTRIB_Vendor_Specific);
 	iter1=range.first;
 	iter2=range.second;		
 	while (iter1!=iter2)
@@ -307,7 +307,7 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
 		iter1++;
 	}
 	
-	range=packet->findAttributes(18);
+    range=packet->findAttributes(ATTRIB_Reply_Message);
 	iter1=range.first;
 	iter2=range.second;		
 	string msg;

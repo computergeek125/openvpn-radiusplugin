@@ -437,7 +437,7 @@ error:
 	    }
             catch ( ... )
             {
-                cerr << getTime() << "Unknown Exception!";
+                cerr << getTime() << "Unknown Exception!"<<endl;
 
             }
             return OPENVPN_PLUGIN_FUNC_ERROR;
@@ -488,7 +488,7 @@ error:
 	    }
             catch ( ... )
             {
-                cerr << getTime() << "Unknown Exception!";
+                cerr << getTime() << "Unknown Exception!"<<endl;
 
             }
             return OPENVPN_PLUGIN_FUNC_ERROR;
@@ -517,7 +517,7 @@ error:
                 {
 
                     if ( DEBUG ( context->getVerbosity() ) )
-                        cerr << getTime() <<  "RADIUS-PLUGIN: FOREGROUND: Delete user from accounting: commonname: " << newuser->getKey() << "\n";
+                        cerr << getTime() <<  "RADIUS-PLUGIN: FOREGROUND: Delete user from accounting: commonname: " << newuser->getCommonname() << "\n";
 
 
                     //send the information to the background process
@@ -1337,7 +1337,10 @@ void get_user_env(PluginContext * context,const int type,const char * envp[], Us
         user->setCommonname ( get_env ( "username", envp ) );
     }
 
-    user->setDev ( get_env ( "dev", envp ) );
+    if ( get_env ( "dev", envp ) !=NULL )
+    {
+        user->setDev ( get_env ( "dev", envp ) );
+    }
 
     string untrusted_ip;
     // it's ipv4
@@ -1350,6 +1353,7 @@ void get_user_env(PluginContext * context,const int type,const char * envp[], Us
     {
         untrusted_ip = get_env ( "untrusted_ip6", envp );
     }
+
     user->setCallingStationId ( untrusted_ip );
     //for OpenVPN option client cert not required, common_name is "UNDEF", see status.log
 
@@ -1365,7 +1369,7 @@ void get_user_env(PluginContext * context,const int type,const char * envp[], Us
     }
 
     user->setUntrustedPort ( get_env ( "untrusted_port", envp ) );
-    
+
     if (untrusted_ip.find(":") == untrusted_ip.npos)
     	user->setStatusFileKey(user->getCommonname() + string ( "," ) + untrusted_ip + string ( ":" ) + get_env ( "untrusted_port", envp ) );
     else

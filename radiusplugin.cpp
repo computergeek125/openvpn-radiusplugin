@@ -502,7 +502,7 @@ error:
 
             if ( DEBUG ( context->getVerbosity() ) )
             {
-                cerr << getTime() << "\n\nRADIUS-PLUGIN: FOREGROUND: OPENVPN_PLUGIN_CLIENT_DISCONNECT is called.\n";
+                cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND: OPENVPN_PLUGIN_CLIENT_DISCONNECT is called.\n";
             }
             try
             {

@@ -177,7 +177,8 @@ string IpcSocket::recvStr(void)
 	size = read(this->socket,&len,sizeof(ssize_t));
 	if (size!=sizeof(ssize_t))
 	{
-	  throw Exception(Exception::SOCKETRECV);
+      cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: Ipc exception. size = "<<size << endl;
+      throw Exception(Exception::SOCKETRECV);
 	}
         if(len > 0)
         {
@@ -192,6 +193,7 @@ string IpcSocket::recvStr(void)
           size = read (this->socket, buffer, len);
           if (size!=len)
           {
+            cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: Ipc exception. size = "<<size << " len="<<len<< endl;
             throw Exception(Exception::SOCKETRECV);
           }
           str=buffer;

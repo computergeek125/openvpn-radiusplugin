@@ -104,7 +104,6 @@ void AcctScheduler::delUser(PluginContext * context, UserAcct *user)
 	}
 	else
 	{
-		
 		activeuserlist.erase(user->getKey());
 	}
 

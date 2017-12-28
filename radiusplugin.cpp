@@ -162,13 +162,13 @@ extern "C"
         // Make a socket for foreground and background processes
         // to communicate.
         //Authentication process:
-        if ( socketpair ( PF_UNIX, SOCK_DGRAM, 0, fd_auth ) == -1 )
+        if ( socketpair ( PF_UNIX, SOCK_STREAM, 0, fd_auth ) == -1 )
         {
             cerr << getTime() << "RADIUS-PLUGIN: socketpair call failed for authentication process\n";
             goto error;
         }
         //Accounting process:
-        if ( socketpair ( PF_UNIX, SOCK_DGRAM, 0, fd_acct ) == -1 )
+        if ( socketpair ( PF_UNIX, SOCK_STREAM, 0, fd_acct ) == -1 )
         {
             cerr << getTime() << "RADIUS-PLUGIN: socketpair call failed for accounting process\n";
             goto error;

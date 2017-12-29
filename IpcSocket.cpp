@@ -187,7 +187,7 @@ string IpcSocket::recvStr(void)
 	  }
 	  catch(...)
 	  {
-	    cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for buffer in IpcSocket::recvStr." << endl;
+        cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for buffer in IpcSocket::recvStr. len="<<len << endl;
 	  }
           memset (buffer, 0, len+1);
           size = read (this->socket, buffer, len);

@@ -504,6 +504,8 @@ error:
             {
                 cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND: OPENVPN_PLUGIN_CLIENT_DISCONNECT is called.\n";
             }
+
+
             try
             {
                 tmpuser=new UserPlugin();
@@ -512,7 +514,8 @@ error:
                 //string key=common_name + string ( "," ) +untrusted_ip+string ( ":" ) + string ( get_env ( "untrusted_port", envp ) );
 
                 newuser=context->findUser(tmpuser->getKey());
-		delete(tmpuser);
+                delete(tmpuser);
+
                 if ( newuser!=NULL )
                 {
 
@@ -520,12 +523,19 @@ error:
                         cerr << getTime() <<  "RADIUS-PLUGIN: FOREGROUND: Delete user from accounting: commonname: " << newuser->getCommonname() << "\n";
 
 
+                    pthread_mutex_lock(context->getAcctMutexRecv());
+                    pthread_mutex_lock(context->getAcctMutexSend());
+
                     //send the information to the background process
                     context->acctsocketbackgr.send ( DEL_USER );
                     context->acctsocketbackgr.send ( newuser->getKey() );
 
                     //get the response
                     const int status = context->acctsocketbackgr.recvInt();
+
+                    pthread_mutex_unlock (context->getAcctMutexSend());
+                    pthread_mutex_unlock (context->getAcctMutexRecv());
+
                     if ( DEBUG ( context->getVerbosity() ) )
                         cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND: Accounting for user with key" << newuser->getKey()  << " stopped!\n";
 
@@ -548,8 +558,8 @@ error:
             }
             catch (std::bad_alloc)
             {
-	      cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND: New failed on UserPlugin in OPENVPN_PLUGIN_CLIENT_DISCONNECT" << endl;
-	    }
+                cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND: New failed on UserPlugin in OPENVPN_PLUGIN_CLIENT_DISCONNECT" << endl;
+            }
             catch ( ... )
             {
                 cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND:" << "Unknown Exception!\n";

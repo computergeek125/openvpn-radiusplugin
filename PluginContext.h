@@ -78,6 +78,7 @@ private:
         int result;
 
         pthread_mutex_t usermutex;
+        pthread_mutex_t acctsocketmutex;
 
 	
 public:
@@ -128,7 +129,9 @@ public:
         pthread_mutex_t * getAcctMutexSend(void);
         pthread_mutex_t * getAcctMutexRecv(void);
         //void setMutex(pthread_mutex_t);
-        
+
+        pthread_mutex_t * getAcctSocketMutex(void);
+
         UserPlugin * getNewUser();
         UserPlugin * getNewAcctUser();
         void addNewUser(UserPlugin * newuser);

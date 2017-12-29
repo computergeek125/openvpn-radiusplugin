@@ -290,6 +290,11 @@ pthread_mutex_t * PluginContext::getAcctMutexRecv(void )
   return &acctmutexrecv;
 }
 
+pthread_mutex_t * PluginContext::getAcctSocketMutex(void )
+{
+  return &acctsocketmutex;
+}
+
 
 pthread_t * PluginContext::getThread()
 {

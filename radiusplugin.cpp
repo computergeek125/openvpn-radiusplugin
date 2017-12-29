@@ -367,6 +367,7 @@ error:
             pthread_mutex_init (context->getAcctMutexSend(), NULL);
             pthread_cond_init (context->getAcctCondRecv(), NULL);
             pthread_mutex_init (context->getAcctMutexRecv(), NULL);
+            pthread_mutex_init (context->getAcctSocketMutex(), NULL);
 
             if (pthread_create(context->getAcctThread(), NULL, &client_connect, (void *) context) != 0)
             {
@@ -522,9 +523,7 @@ error:
                     if ( DEBUG ( context->getVerbosity() ) )
                         cerr << getTime() <<  "RADIUS-PLUGIN: FOREGROUND: Delete user from accounting: commonname: " << newuser->getCommonname() << "\n";
 
-
-                    pthread_mutex_lock(context->getAcctMutexRecv());
-                    pthread_mutex_lock(context->getAcctMutexSend());
+                    pthread_mutex_lock(context->getAcctSocketMutex());
 
                     //send the information to the background process
                     context->acctsocketbackgr.send ( DEL_USER );
@@ -533,8 +532,7 @@ error:
                     //get the response
                     const int status = context->acctsocketbackgr.recvInt();
 
-                    pthread_mutex_unlock (context->getAcctMutexSend());
-                    pthread_mutex_unlock (context->getAcctMutexRecv());
+                    pthread_mutex_unlock(context->getAcctSocketMutex());
 
                     if ( DEBUG ( context->getVerbosity() ) )
                         cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND: Accounting for user with key" << newuser->getKey()  << " stopped!\n";
@@ -653,14 +651,15 @@ error:
             if (context->conf.getAccountingOnly()==false)
                 pthread_join(*context->getThread(),NULL);
             pthread_join(*context->getAcctThread(),NULL);
-	    pthread_cond_destroy(context->getCondSend( ));
-	    pthread_cond_destroy(context->getCondRecv( ));
-	    pthread_mutex_destroy(context->getMutexSend());
-	    pthread_mutex_destroy(context->getMutexRecv());
+            pthread_cond_destroy(context->getCondSend( ));
+            pthread_cond_destroy(context->getCondRecv( ));
+            pthread_mutex_destroy(context->getMutexSend());
+            pthread_mutex_destroy(context->getMutexRecv());
             pthread_cond_destroy(context->getAcctCondSend( ));
-	    pthread_cond_destroy(context->getAcctCondRecv( ));
-	    pthread_mutex_destroy(context->getAcctMutexSend());
-	    pthread_mutex_destroy(context->getAcctMutexRecv());
+            pthread_cond_destroy(context->getAcctCondRecv( ));
+            pthread_mutex_destroy(context->getAcctMutexSend());
+            pthread_mutex_destroy(context->getAcctMutexRecv());
+            pthread_mutex_destroy(context->getAcctSocketMutex());
         }
         else
         {
@@ -999,11 +998,16 @@ void  * auth_user_pass_verify(void * c)
                     cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND THREAD: Error ar rekeying!" << endl;
                     //error on authenticate user at rekeying -> delete the user!
                     //send the information to the background process
+
+                    pthread_mutex_lock(context->getAcctSocketMutex());
+
                     context->acctsocketbackgr.send ( DEL_USER );
                     context->acctsocketbackgr.send ( newuser->getKey() );
 
                     //get the response
                     const int status = context->acctsocketbackgr.recvInt();
+                    pthread_mutex_unlock(context->getAcctSocketMutex());
+
                     if ( status == RESPONSE_SUCCEEDED )
                     {
                         if ( DEBUG ( context->getVerbosity() ) )
@@ -1154,6 +1158,7 @@ void  * client_connect(void * c)
                     cerr << getTime() << "RADIUS-PLUGIN: FOREGROUND THREAD: Add user for accounting: username: " << newuser->getUsername() << ", commonname: " << newuser->getCommonname() << "\n";
 
                 //send information to the background process
+                pthread_mutex_lock(context->getAcctSocketMutex());
                 context->acctsocketbackgr.send ( ADD_USER );
                 context->acctsocketbackgr.send ( newuser->getUsername() );
                 context->acctsocketbackgr.send ( newuser->getSessionId() );
@@ -1173,6 +1178,9 @@ void  * client_connect(void * c)
                 context->acctsocketbackgr.send ( newuser->getVsaBuf(), newuser->getVsaBufLen() );
                 //get the response
                 const int status = context->acctsocketbackgr.recvInt();
+
+                pthread_mutex_unlock(context->getAcctSocketMutex());
+
                 if ( status == RESPONSE_SUCCEEDED )
                 {
                     newuser->setAccounted ( true );

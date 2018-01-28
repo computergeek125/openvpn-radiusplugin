@@ -234,6 +234,7 @@ int Config::parseConfigFile(const char * configfile)
 					  if (pos != string::npos) param.erase(pos);
 					  if (param == "client-cert-not-required" || param == "verify-client-cert")
 					  {
+					  	  cerr << getTime() << "RADIUS-PLUGIN: client-cert 1: " << param << line;
 						  this->deletechars(&line);
 						  if (line == "client-cert-not-required")
 						  {
@@ -241,6 +242,7 @@ int Config::parseConfigFile(const char * configfile)
 						  }
 						  pos = line.find_first_not_of(delims);
 						  if (pos != string::npos) line.erase(0,pos);
+						  cerr << getTime() << "RADIUS-PLUGIN: client-cert 2: " << param << line;
 						  if (line == "optional" || line == "none") {
 							  this->clientcertnotrequired=true;
 						  }
